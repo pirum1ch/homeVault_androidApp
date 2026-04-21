@@ -14,6 +14,7 @@ class EncryptedPrefs(context: Context) {
         private const val KEY_LOCAL_BASE_URL = "local_base_url"
         private const val KEY_BIOMETRIC_ENABLED = "biometric_enabled"
         private const val KEY_USERNAME = "username"
+        private const val KEY_AUTO_REFRESH = "auto_refresh_interval_ms"
     }
 
     private val masterKey = MasterKey.Builder(context)
@@ -43,6 +44,9 @@ class EncryptedPrefs(context: Context) {
 
     fun saveUsername(name: String) { prefs.edit().putString(KEY_USERNAME, name).apply() }
     fun getUsername(): String? = prefs.getString(KEY_USERNAME, null)
+
+    fun saveAutoRefreshInterval(ms: Long) { prefs.edit().putLong(KEY_AUTO_REFRESH, ms).apply() }
+    fun getAutoRefreshInterval(): Long = prefs.getLong(KEY_AUTO_REFRESH, 0L)
 
     fun clear() { prefs.edit().clear().apply() }
 }
