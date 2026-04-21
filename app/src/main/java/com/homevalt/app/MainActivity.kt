@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
         fileRepository = FileRepository(encryptedPrefs, networkSwitcher, jwtInterceptor, db, applicationContext)
 
         val loginViewModel = ViewModelProvider(this, vmFactory { LoginViewModel(application, authRepository, encryptedPrefs) })[LoginViewModel::class.java]
-        val fileListViewModel = ViewModelProvider(this, vmFactory { FileListViewModel(application, fileRepository, authRepository) })[FileListViewModel::class.java]
+        val fileListViewModel = ViewModelProvider(this, vmFactory { FileListViewModel(application, fileRepository, authRepository, encryptedPrefs) })[FileListViewModel::class.java]
         val fileDetailViewModel = ViewModelProvider(this, vmFactory { FileDetailViewModel(application, fileRepository) })[FileDetailViewModel::class.java]
         val profileViewModel = ViewModelProvider(this, vmFactory { ProfileViewModel(application, authRepository, encryptedPrefs) })[ProfileViewModel::class.java]
         val uploadQueueViewModel = ViewModelProvider(this, vmFactory { UploadQueueViewModel(application, fileRepository) })[UploadQueueViewModel::class.java]

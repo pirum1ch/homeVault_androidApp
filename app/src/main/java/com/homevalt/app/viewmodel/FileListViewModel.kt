@@ -5,9 +5,11 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.homevalt.app.data.network.dto.FileDto
+import com.homevalt.app.data.preferences.EncryptedPrefs
 import com.homevalt.app.data.repository.AuthRepository
 import com.homevalt.app.data.repository.FileRepository
 import com.homevalt.app.util.FileUtils
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +34,8 @@ sealed class FileListEvent {
 class FileListViewModel(
     application: Application,
     private val fileRepository: FileRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val encryptedPrefs: EncryptedPrefs
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow<FileListUiState>(FileListUiState.Loading)
@@ -44,9 +47,13 @@ class FileListViewModel(
     private val _events = MutableSharedFlow<FileListEvent>()
     val events = _events.asSharedFlow()
 
+    private val _autoRefreshInterval = MutableStateFlow(0L)
+    val autoRefreshInterval = _autoRefreshInterval.asStateFlow()
+
     private var currentPage = 0
     private val allFiles = mutableListOf<FileDto>()
     private val pageSize = 20
+    private var autoRefreshJob: Job? = null
 
     companion object {
         private const val NAS_POLL_INTERVAL_MS = 30_000L
@@ -55,6 +62,7 @@ class FileListViewModel(
     init {
         loadFiles()
         startNasHealthPolling()
+        reloadIntervalFromPrefs()
     }
 
     private fun startNasHealthPolling() {
@@ -92,6 +100,23 @@ class FileListViewModel(
     }
 
     fun refresh() = loadFiles()
+
+    fun reloadIntervalFromPrefs() {
+        _autoRefreshInterval.value = encryptedPrefs.getAutoRefreshInterval()
+        restartAutoRefresh()
+    }
+
+    private fun restartAutoRefresh() {
+        autoRefreshJob?.cancel()
+        val interval = _autoRefreshInterval.value
+        if (interval <= 0L) return
+        autoRefreshJob = viewModelScope.launch {
+            while (true) {
+                delay(interval)
+                loadFiles()
+            }
+        }
+    }
 
     fun loadMore() {
         viewModelScope.launch {
