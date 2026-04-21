@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!--
+        Cleartext (HTTP) is allowed globally because this is a personal home NAS client.
+        Users explicitly enter http:// addresses for local servers — enforcing HTTPS-only
+        would break any self-hosted setup without a certificate.
+        Public HTTPS servers are still fully supported and preferred.
+    -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

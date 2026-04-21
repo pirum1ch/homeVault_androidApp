@@ -1,0 +1,48 @@
+package com.homevalt.app.data.preferences
+
+import android.content.Context
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKey
+import com.homevalt.app.util.Constants
+
+class EncryptedPrefs(context: Context) {
+
+    companion object {
+        private const val PREFS_FILE_NAME = "secure_prefs"
+        private const val KEY_JWT_TOKEN = "jwt_token"
+        private const val KEY_PUBLIC_BASE_URL = "public_base_url"
+        private const val KEY_LOCAL_BASE_URL = "local_base_url"
+        private const val KEY_BIOMETRIC_ENABLED = "biometric_enabled"
+        private const val KEY_USERNAME = "username"
+    }
+
+    private val masterKey = MasterKey.Builder(context)
+        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
+        .build()
+
+    private val prefs = EncryptedSharedPreferences.create(
+        context,
+        PREFS_FILE_NAME,
+        masterKey,
+        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+    )
+
+    fun saveToken(token: String) { prefs.edit().putString(KEY_JWT_TOKEN, token).apply() }
+    fun getToken(): String? = prefs.getString(KEY_JWT_TOKEN, null)
+    fun clearToken() { prefs.edit().remove(KEY_JWT_TOKEN).apply() }
+
+    fun savePublicUrl(url: String) { prefs.edit().putString(KEY_PUBLIC_BASE_URL, url).apply() }
+    fun getPublicUrl(): String = prefs.getString(KEY_PUBLIC_BASE_URL, Constants.DEFAULT_PUBLIC_URL) ?: Constants.DEFAULT_PUBLIC_URL
+
+    fun saveLocalUrl(url: String) { prefs.edit().putString(KEY_LOCAL_BASE_URL, url).apply() }
+    fun getLocalUrl(): String = prefs.getString(KEY_LOCAL_BASE_URL, Constants.DEFAULT_LOCAL_URL) ?: Constants.DEFAULT_LOCAL_URL
+
+    fun saveBiometricEnabled(enabled: Boolean) { prefs.edit().putBoolean(KEY_BIOMETRIC_ENABLED, enabled).apply() }
+    fun isBiometricEnabled(): Boolean = prefs.getBoolean(KEY_BIOMETRIC_ENABLED, false)
+
+    fun saveUsername(name: String) { prefs.edit().putString(KEY_USERNAME, name).apply() }
+    fun getUsername(): String? = prefs.getString(KEY_USERNAME, null)
+
+    fun clear() { prefs.edit().clear().apply() }
+}
