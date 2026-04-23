@@ -1,8 +1,8 @@
 package com.homevalt.app
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Typography
@@ -39,7 +39,7 @@ import com.homevalt.app.viewmodel.LoginViewModel
 import com.homevalt.app.viewmodel.ProfileViewModel
 import com.homevalt.app.viewmodel.UploadQueueViewModel
 
-class MainActivity : ComponentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var encryptedPrefs: EncryptedPrefs
     private lateinit var jwtInterceptor: JwtInterceptor

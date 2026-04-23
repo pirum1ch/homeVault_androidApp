@@ -13,6 +13,7 @@ class EncryptedPrefs(context: Context) {
         private const val KEY_PUBLIC_BASE_URL = "public_base_url"
         private const val KEY_LOCAL_BASE_URL = "local_base_url"
         private const val KEY_BIOMETRIC_ENABLED = "biometric_enabled"
+        private const val KEY_BIOMETRIC_ASKED = "biometric_asked"
         private const val KEY_USERNAME = "username"
         private const val KEY_AUTO_REFRESH = "auto_refresh_interval_ms"
     }
@@ -41,6 +42,9 @@ class EncryptedPrefs(context: Context) {
 
     fun saveBiometricEnabled(enabled: Boolean) { prefs.edit().putBoolean(KEY_BIOMETRIC_ENABLED, enabled).apply() }
     fun isBiometricEnabled(): Boolean = prefs.getBoolean(KEY_BIOMETRIC_ENABLED, false)
+
+    fun saveBiometricAsked(asked: Boolean) { prefs.edit().putBoolean(KEY_BIOMETRIC_ASKED, asked).apply() }
+    fun isBiometricAsked(): Boolean = prefs.getBoolean(KEY_BIOMETRIC_ASKED, false)
 
     fun saveUsername(name: String) { prefs.edit().putString(KEY_USERNAME, name).apply() }
     fun getUsername(): String? = prefs.getString(KEY_USERNAME, null)

@@ -36,6 +36,8 @@ class AuthRepository(
     suspend fun logout() {
         encryptedPrefs.clearToken()
         encryptedPrefs.saveUsername("")
+        encryptedPrefs.saveBiometricEnabled(false)
+        encryptedPrefs.saveBiometricAsked(false)
         database.uploadRequestDao().deleteAll()
         WorkManager.getInstance(context).cancelAllWork()
     }
@@ -44,4 +46,6 @@ class AuthRepository(
     fun getUsername(): String? = encryptedPrefs.getUsername()
     fun isBiometricEnabled(): Boolean = encryptedPrefs.isBiometricEnabled()
     fun setBiometricEnabled(enabled: Boolean) = encryptedPrefs.saveBiometricEnabled(enabled)
+    fun isBiometricAsked(): Boolean = encryptedPrefs.isBiometricAsked()
+    fun setBiometricAsked(asked: Boolean) = encryptedPrefs.saveBiometricAsked(asked)
 }

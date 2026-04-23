@@ -15,6 +15,7 @@ sealed class LoginUiState {
     object Idle : LoginUiState()
     object Loading : LoginUiState()
     object Success : LoginUiState()
+    object PromptBiometric : LoginUiState()
     data class Error(val message: String) : LoginUiState()
 }
 
@@ -36,7 +37,7 @@ class LoginViewModel(
     fun getPublicUrl(): String = encryptedPrefs.getPublicUrl()
     fun savePublicUrl(url: String) { encryptedPrefs.savePublicUrl(url.trim()) }
 
-    fun login(username: String, password: String, enableBiometric: Boolean, customPublicUrl: String? = null) {
+    fun login(username: String, password: String, customPublicUrl: String? = null) {
         if (username.isBlank() || password.isBlank()) {
             viewModelScope.launch { _events.emit("Username and password are required") }
             return
@@ -48,14 +49,25 @@ class LoginViewModel(
             _uiState.value = LoginUiState.Loading
             val result = authRepository.login(username, password)
             if (result.isSuccess) {
-                if (enableBiometric) authRepository.setBiometricEnabled(true)
-                _uiState.value = LoginUiState.Success
+                val shouldOffer = !authRepository.isBiometricAsked() && !authRepository.isBiometricEnabled()
+                _uiState.value = if (shouldOffer) LoginUiState.PromptBiometric else LoginUiState.Success
             } else {
                 val msg = result.exceptionOrNull()?.message ?: "Login failed"
                 _uiState.value = LoginUiState.Error(msg)
                 _events.emit(msg)
             }
         }
+    }
+
+    fun onBiometricOfferAccepted() {
+        authRepository.setBiometricEnabled(true)
+        authRepository.setBiometricAsked(true)
+        _uiState.value = LoginUiState.Success
+    }
+
+    fun onBiometricOfferDeclined() {
+        authRepository.setBiometricAsked(true)
+        _uiState.value = LoginUiState.Success
     }
 
     fun loginWithBiometric() {

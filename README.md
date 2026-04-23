@@ -11,10 +11,10 @@ Android client for the HomeVault personal NAS/file storage system.
 ## Features
 
 - **Login** with username/password; optional biometric (fingerprint/face) on subsequent opens
-- **File list** — paginated, pull-to-refresh, infinite scroll
+- **File list** — paginated, infinite scroll, live search
 - **File detail** — metadata, preview icon, download to Downloads folder, delete with confirmation
 - **Upload** — pick files via bottom action bar or share files from any app (share sheet integration)
-- **Upload queue** — background uploads via WorkManager, retry on failure, cancel pending jobs
+- **Upload queue** — background uploads via WorkManager, retry on failure, cancel pending jobs; status shown as colour-coded pictograms (● circle per stage, × cross for failed)
 - **Auto-refresh** — configurable file list polling (off / 1s / 5s / 10s), persisted across sessions, displayed as a pill in the top bar
 - **Profile** — view/edit server URLs, toggle biometric, set auto-refresh interval, logout
 - **Network switching** — automatically switches between local (LAN) and public URL with 2 s health check and 5 min cooldown
@@ -74,6 +74,17 @@ Auto-refresh interval is set in **Profile → auto-refresh** and persists across
 | 1 сек | 1 second |
 | 5 сек | 5 seconds |
 | 10 сек | 10 seconds |
+
+## File statuses
+
+| Status | Icon | Colour | Description |
+|--------|------|--------|-------------|
+| `PENDING` | ● | Orange | Queued, waiting for transfer |
+| `STORED_ON_NAS` | ● | Green | Saved on NAS |
+| `RETRYING` | ● | Yellow | Temporary error, will retry |
+| `NAS_UNAVAILABLE` | ● | Red | NAS unreachable, retries ongoing |
+| `FAILED` | × | Red | Critical error |
+| `UPLOADING` | ● | Blue | Upload in progress |
 
 ## Architecture
 
