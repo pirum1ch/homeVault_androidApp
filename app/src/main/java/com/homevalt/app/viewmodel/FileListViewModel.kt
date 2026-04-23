@@ -47,7 +47,7 @@ class FileListViewModel(
     private val _events = MutableSharedFlow<FileListEvent>()
     val events = _events.asSharedFlow()
 
-    private val _autoRefreshInterval = MutableStateFlow(0L)
+    private val _autoRefreshInterval = MutableStateFlow(encryptedPrefs.getAutoRefreshInterval())
     val autoRefreshInterval = _autoRefreshInterval.asStateFlow()
 
     private var currentPage = 0
@@ -62,7 +62,6 @@ class FileListViewModel(
     init {
         loadFiles()
         startNasHealthPolling()
-        reloadIntervalFromPrefs()
     }
 
     private fun startNasHealthPolling() {
@@ -106,6 +105,11 @@ class FileListViewModel(
         restartAutoRefresh()
     }
 
+    fun stopAutoRefresh() {
+        autoRefreshJob?.cancel()
+        autoRefreshJob = null
+    }
+
     private fun restartAutoRefresh() {
         autoRefreshJob?.cancel()
         val interval = _autoRefreshInterval.value
@@ -142,6 +146,7 @@ class FileListViewModel(
     }
 
     fun logout() {
+        autoRefreshJob?.cancel()
         viewModelScope.launch {
             authRepository.logout()
             _events.emit(FileListEvent.NavigateToLogin)

@@ -15,7 +15,8 @@ Android client for the HomeVault personal NAS/file storage system.
 - **File detail** — metadata, preview icon, download to Downloads folder, delete with confirmation
 - **Upload** — pick files via bottom action bar or share files from any app (share sheet integration)
 - **Upload queue** — background uploads via WorkManager, retry on failure, cancel pending jobs
-- **Profile** — view/edit server URLs, toggle biometric, logout
+- **Auto-refresh** — configurable file list polling (off / 1s / 5s / 10s), persisted across sessions, displayed as a pill in the top bar
+- **Profile** — view/edit server URLs, toggle biometric, set auto-refresh interval, logout
 - **Network switching** — automatically switches between local (LAN) and public URL with 2 s health check and 5 min cooldown
 - **Session handling** — JWT interceptor auto-attaches Bearer token; 401 redirects to login
 
@@ -60,11 +61,19 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 On first login, default credentials are `admin` / `admin` (set by the backend's `AdminUserInitializer`).
 
-Server URLs are configured in **Profile → URLs**:
+Server URLs are configured in **Profile → server**:
 | Setting | Default | Notes |
 |---|---|---|
 | Public URL | `http://10.0.2.2:8080` | `10.0.2.2` = host machine from emulator |
 | Local URL | _(empty)_ | LAN address, e.g. `http://192.168.1.10:8080` |
+
+Auto-refresh interval is set in **Profile → auto-refresh** and persists across restarts:
+| Option | Interval |
+|---|---|
+| нет | disabled |
+| 1 сек | 1 second |
+| 5 сек | 5 seconds |
+| 10 сек | 10 seconds |
 
 ## Architecture
 

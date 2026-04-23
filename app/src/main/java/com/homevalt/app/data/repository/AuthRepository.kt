@@ -34,7 +34,8 @@ class AuthRepository(
     }
 
     suspend fun logout() {
-        encryptedPrefs.clear()
+        encryptedPrefs.clearToken()
+        encryptedPrefs.saveUsername("")
         database.uploadRequestDao().deleteAll()
         WorkManager.getInstance(context).cancelAllWork()
     }
