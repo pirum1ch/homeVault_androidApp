@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.homevalt.app.data.preferences.EncryptedPrefs
 import com.homevalt.app.data.repository.AuthRepository
+import com.homevalt.app.worker.PhotoBackupWorker
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,7 +17,8 @@ data class ProfileUiState(
     val publicUrl: String = "",
     val localUrl: String = "",
     val biometricEnabled: Boolean = false,
-    val autoRefreshInterval: Long = 0L
+    val autoRefreshInterval: Long = 0L,
+    val autoPhotoBackup: Boolean = false
 )
 
 sealed class ProfileEvent {
@@ -42,7 +44,8 @@ class ProfileViewModel(
             publicUrl = encryptedPrefs.getPublicUrl(),
             localUrl = encryptedPrefs.getLocalUrl(),
             biometricEnabled = encryptedPrefs.isBiometricEnabled(),
-            autoRefreshInterval = encryptedPrefs.getAutoRefreshInterval()
+            autoRefreshInterval = encryptedPrefs.getAutoRefreshInterval(),
+            autoPhotoBackup = encryptedPrefs.isAutoPhotoBackupEnabled()
         )
     }
 
@@ -66,6 +69,17 @@ class ProfileViewModel(
     fun setAutoRefreshInterval(ms: Long) {
         encryptedPrefs.saveAutoRefreshInterval(ms)
         _uiState.value = _uiState.value.copy(autoRefreshInterval = ms)
+    }
+
+    fun setAutoPhotoBackup(enabled: Boolean) {
+        if (enabled) {
+            encryptedPrefs.saveLastPhotoBackupTs(System.currentTimeMillis())
+            PhotoBackupWorker.enqueue(getApplication())
+        } else {
+            PhotoBackupWorker.cancel(getApplication())
+        }
+        encryptedPrefs.saveAutoPhotoBackupEnabled(enabled)
+        _uiState.value = _uiState.value.copy(autoPhotoBackup = enabled)
     }
 
     fun logout() {

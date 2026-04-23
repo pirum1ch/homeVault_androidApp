@@ -7,6 +7,7 @@ import com.homevalt.app.data.network.JwtInterceptor
 import com.homevalt.app.data.network.RetrofitClient
 import com.homevalt.app.data.network.dto.LoginRequest
 import com.homevalt.app.data.preferences.EncryptedPrefs
+import com.homevalt.app.worker.SyncWorker
 
 class AuthRepository(
     private val encryptedPrefs: EncryptedPrefs,
@@ -24,6 +25,7 @@ class AuthRepository(
             if (response.isSuccessful && body != null) {
                 encryptedPrefs.saveToken(body.token)
                 encryptedPrefs.saveUsername(username)
+                SyncWorker.enqueuePeriodicSync(context)
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Login failed: ${response.code()} ${response.message()}"))
