@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.homevalt.app.data.preferences.EncryptedPrefs
 import com.homevalt.app.data.repository.AuthRepository
+import com.homevalt.app.worker.PhotoBackupWorker
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -73,6 +74,9 @@ class ProfileViewModel(
     fun setAutoPhotoBackup(enabled: Boolean) {
         encryptedPrefs.saveAutoPhotoBackup(enabled)
         _uiState.value = _uiState.value.copy(autoPhotoBackup = enabled)
+        val context = getApplication<Application>()
+        if (enabled) PhotoBackupWorker.enqueue(context)
+        else PhotoBackupWorker.cancel(context)
     }
 
     fun logout() {

@@ -10,7 +10,9 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.homevalt.app.data.database.HomeVaultDatabase
 import com.homevalt.app.data.database.UploadStatus
+import com.homevalt.app.data.preferences.EncryptedPrefs
 import com.homevalt.app.util.NotificationHelper
+import com.homevalt.app.worker.PhotoBackupWorker
 import com.homevalt.app.worker.UploadWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +22,7 @@ class HomeVaultApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         NotificationHelper.createChannel(this)
+        if (EncryptedPrefs(this).isAutoPhotoBackupEnabled()) PhotoBackupWorker.enqueue(this)
         CoroutineScope(Dispatchers.IO).launch {
             val db = HomeVaultDatabase.getDatabase(applicationContext)
             val pending = db.uploadRequestDao().getByStatus(UploadStatus.PENDING)

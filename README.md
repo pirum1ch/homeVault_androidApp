@@ -15,8 +15,10 @@ Android client for the HomeVault personal NAS/file storage system.
 - **File detail** — metadata, preview icon, download to Downloads folder, delete with confirmation
 - **Upload** — pick files via bottom action bar or share files from any app (share sheet integration)
 - **Upload queue** — background uploads via WorkManager, retry on failure, cancel pending jobs; status shown as colour-coded pictograms (● circle per stage, × cross for failed)
+- **Pull-to-refresh** — swipe down on the file list to trigger an immediate refresh
 - **Auto-refresh** — configurable file list polling (off / 1s / 5s / 10s), persisted across sessions, displayed as a pill in the top bar
-- **Profile** — view/edit server URLs, toggle biometric, set auto-refresh interval, logout
+- **Photo backup** — automatic background sync of new gallery photos to HomeVault every 15 minutes; toggle in Profile, requires storage permission
+- **Profile** — view/edit server URLs, toggle biometric, set auto-refresh interval, toggle photo backup, logout
 - **Network switching** — automatically switches between local (LAN) and public URL with 2 s health check and 5 min cooldown
 - **Session handling** — JWT interceptor auto-attaches Bearer token; 401 redirects to login
 
@@ -97,7 +99,7 @@ app/
 │   └── repository/     AuthRepository, FileRepository, NetworkSwitcher
 ├── ui/screens/         Jetpack Compose screens (Login, FileList, FileDetail, Profile, UploadQueue)
 ├── viewmodel/          AndroidViewModel + StateFlow/SharedFlow
-├── worker/             UploadWorker, DownloadWorker (WorkManager CoroutineWorker)
+├── worker/             UploadWorker, DownloadWorker, PhotoBackupWorker, SyncWorker (WorkManager CoroutineWorker)
 ├── share/              ShareReceiverActivity — handles ACTION_SEND intents
 └── util/               BiometricHelper, NotificationHelper, FileUtils, Constants
 ```
