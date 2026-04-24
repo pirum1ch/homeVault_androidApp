@@ -16,6 +16,7 @@ class EncryptedPrefs(context: Context) {
         private const val KEY_BIOMETRIC_ASKED = "biometric_asked"
         private const val KEY_USERNAME = "username"
         private const val KEY_AUTO_REFRESH = "auto_refresh_interval_ms"
+        private const val KEY_AUTO_PHOTO_BACKUP = "auto_photo_backup"
     }
 
     private val masterKey = MasterKey.Builder(context)
@@ -51,6 +52,9 @@ class EncryptedPrefs(context: Context) {
 
     fun saveAutoRefreshInterval(ms: Long) { prefs.edit().putLong(KEY_AUTO_REFRESH, ms).apply() }
     fun getAutoRefreshInterval(): Long = prefs.getLong(KEY_AUTO_REFRESH, 0L)
+
+    fun saveAutoPhotoBackup(enabled: Boolean) { prefs.edit().putBoolean(KEY_AUTO_PHOTO_BACKUP, enabled).apply() }
+    fun isAutoPhotoBackupEnabled(): Boolean = prefs.getBoolean(KEY_AUTO_PHOTO_BACKUP, false)
 
     fun clear() { prefs.edit().clear().apply() }
 }

@@ -16,7 +16,8 @@ data class ProfileUiState(
     val publicUrl: String = "",
     val localUrl: String = "",
     val biometricEnabled: Boolean = false,
-    val autoRefreshInterval: Long = 0L
+    val autoRefreshInterval: Long = 0L,
+    val autoPhotoBackup: Boolean = false
 )
 
 sealed class ProfileEvent {
@@ -42,7 +43,8 @@ class ProfileViewModel(
             publicUrl = encryptedPrefs.getPublicUrl(),
             localUrl = encryptedPrefs.getLocalUrl(),
             biometricEnabled = encryptedPrefs.isBiometricEnabled(),
-            autoRefreshInterval = encryptedPrefs.getAutoRefreshInterval()
+            autoRefreshInterval = encryptedPrefs.getAutoRefreshInterval(),
+            autoPhotoBackup = encryptedPrefs.isAutoPhotoBackupEnabled()
         )
     }
 
@@ -66,6 +68,11 @@ class ProfileViewModel(
     fun setAutoRefreshInterval(ms: Long) {
         encryptedPrefs.saveAutoRefreshInterval(ms)
         _uiState.value = _uiState.value.copy(autoRefreshInterval = ms)
+    }
+
+    fun setAutoPhotoBackup(enabled: Boolean) {
+        encryptedPrefs.saveAutoPhotoBackup(enabled)
+        _uiState.value = _uiState.value.copy(autoPhotoBackup = enabled)
     }
 
     fun logout() {

@@ -50,6 +50,9 @@ class FileListViewModel(
     private val _autoRefreshInterval = MutableStateFlow(encryptedPrefs.getAutoRefreshInterval())
     val autoRefreshInterval = _autoRefreshInterval.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     private var currentPage = 0
     private val allFiles = mutableListOf<FileDto>()
     private val pageSize = 20
@@ -86,6 +89,7 @@ class FileListViewModel(
         currentPage = 0
         allFiles.clear()
         viewModelScope.launch {
+            _isRefreshing.value = true
             _uiState.value = FileListUiState.Loading
             val result = fileRepository.getFiles(0, pageSize)
             if (result.isSuccess) {
@@ -95,6 +99,7 @@ class FileListViewModel(
             } else {
                 _uiState.value = FileListUiState.Error(result.exceptionOrNull()?.message ?: "Failed to load files")
             }
+            _isRefreshing.value = false
         }
     }
 
