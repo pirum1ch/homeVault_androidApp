@@ -3,6 +3,8 @@ package com.homevalt.app.data.network
 import com.homevalt.app.data.network.dto.AuthResponse
 import com.homevalt.app.data.network.dto.FileDto
 import com.homevalt.app.data.network.dto.HealthResponse
+import com.homevalt.app.data.network.dto.NasConnectionRequest
+import com.homevalt.app.data.network.dto.NasConnectionResponse
 import com.homevalt.app.data.network.dto.PageResponse
 import com.homevalt.app.data.network.dto.LoginRequest
 import com.homevalt.app.data.network.dto.UploadResponse
@@ -14,6 +16,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -48,4 +51,19 @@ interface HomeVaultApiService {
 
     @GET("/health/nas")
     suspend fun checkHealth(): Response<HealthResponse>
+
+    @GET("/api/nas/connections")
+    suspend fun getNasConnections(): Response<List<NasConnectionResponse>>
+
+    @POST("/api/nas/connections")
+    suspend fun createNasConnection(@Body request: NasConnectionRequest): Response<NasConnectionResponse>
+
+    @PUT("/api/nas/connections/{id}")
+    suspend fun updateNasConnection(
+        @Path("id") id: String,
+        @Body request: NasConnectionRequest
+    ): Response<NasConnectionResponse>
+
+    @POST("/api/nas/connections/{id}/activate")
+    suspend fun activateNasConnection(@Path("id") id: String): Response<Unit>
 }

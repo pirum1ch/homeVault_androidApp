@@ -27,6 +27,7 @@ import com.homevalt.app.data.network.NetworkMonitor
 import com.homevalt.app.data.preferences.EncryptedPrefs
 import com.homevalt.app.data.repository.AuthRepository
 import com.homevalt.app.data.repository.FileRepository
+import com.homevalt.app.data.repository.NasRepository
 import com.homevalt.app.data.repository.NetworkSwitcher
 import com.homevalt.app.ui.screens.FileDetailScreen
 import com.homevalt.app.ui.screens.FileListScreen
@@ -47,6 +48,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var networkSwitcher: NetworkSwitcher
     private lateinit var authRepository: AuthRepository
     private lateinit var fileRepository: FileRepository
+    private lateinit var nasRepository: NasRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,11 +60,12 @@ class MainActivity : AppCompatActivity() {
         networkSwitcher = NetworkSwitcher(encryptedPrefs, networkMonitor, applicationContext)
         authRepository = AuthRepository(encryptedPrefs, networkSwitcher, jwtInterceptor, db, applicationContext)
         fileRepository = FileRepository(encryptedPrefs, networkSwitcher, jwtInterceptor, db, applicationContext)
+        nasRepository = NasRepository(networkSwitcher, jwtInterceptor)
 
         val loginViewModel = ViewModelProvider(this, vmFactory { LoginViewModel(application, authRepository, encryptedPrefs) })[LoginViewModel::class.java]
         val fileListViewModel = ViewModelProvider(this, vmFactory { FileListViewModel(application, fileRepository, authRepository, encryptedPrefs) })[FileListViewModel::class.java]
         val fileDetailViewModel = ViewModelProvider(this, vmFactory { FileDetailViewModel(application, fileRepository) })[FileDetailViewModel::class.java]
-        val profileViewModel = ViewModelProvider(this, vmFactory { ProfileViewModel(application, authRepository, encryptedPrefs) })[ProfileViewModel::class.java]
+        val profileViewModel = ViewModelProvider(this, vmFactory { ProfileViewModel(application, authRepository, encryptedPrefs, nasRepository) })[ProfileViewModel::class.java]
         val uploadQueueViewModel = ViewModelProvider(this, vmFactory { UploadQueueViewModel(application, fileRepository) })[UploadQueueViewModel::class.java]
 
         val startDestination = when {

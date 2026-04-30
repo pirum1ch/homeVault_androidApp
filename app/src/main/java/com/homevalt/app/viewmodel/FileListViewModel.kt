@@ -53,6 +53,9 @@ class FileListViewModel(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
+    private val _connectionMode = MutableStateFlow(encryptedPrefs.getConnectionMode())
+    val connectionMode = _connectionMode.asStateFlow()
+
     private var currentPage = 0
     private val allFiles = mutableListOf<FileDto>()
     private val pageSize = 20
@@ -107,6 +110,7 @@ class FileListViewModel(
 
     fun reloadIntervalFromPrefs() {
         _autoRefreshInterval.value = encryptedPrefs.getAutoRefreshInterval()
+        _connectionMode.value = encryptedPrefs.getConnectionMode()
         restartAutoRefresh()
     }
 

@@ -18,7 +18,7 @@ Android client for the HomeVault personal NAS/file storage system.
 - **Pull-to-refresh** — swipe down on the file list to trigger an immediate refresh
 - **Auto-refresh** — configurable file list polling (off / 1s / 5s / 10s), persisted across sessions, displayed as a pill in the top bar
 - **Photo backup** — automatic background sync of new gallery photos to HomeVault every 15 minutes; toggle in Profile, requires storage permission
-- **Profile** — view/edit server URLs, toggle biometric, set auto-refresh interval, toggle photo backup, logout
+- **Profile** — view/edit server URLs, toggle biometric, set auto-refresh interval, toggle photo backup, switch NAS/WebDAV mode, configure WebDAV connection (admin only), logout
 - **Network switching** — automatically switches between local (LAN) and public URL with 2 s health check and 5 min cooldown
 - **Session handling** — JWT interceptor auto-attaches Bearer token; 401 redirects to login
 
@@ -69,6 +69,24 @@ Server URLs are configured in **Profile → server**:
 | Public URL | `http://10.0.2.2:8080` | `10.0.2.2` = host machine from emulator |
 | Local URL | _(empty)_ | LAN address, e.g. `http://192.168.1.10:8080` |
 
+Connection mode is set in **Profile → storage**:
+| Mode | Pill label | Description |
+|------|-----------|-------------|
+| NAS  | `NAS · UP/DOWN` | SMB/NAS backend (default) |
+| DAV  | `DAV · UP/DOWN` | WebDAV backend |
+
+The mode is stored locally and only affects the label shown in the status pill on the file list screen. Switching it does not change the active backend connection — use the WebDAV configuration form to do that.
+
+**WebDAV configuration** (admin accounts only) — **Profile → storage → webdav configuration**:
+| Field | Description |
+|-------|-------------|
+| Host URL | Full WebDAV base URL, e.g. `https://nas.example.com/webdav/` |
+| Username | WebDAV username |
+| Password | WebDAV password (never prefilled; re-enter to update) |
+| Path | Sub-path on the server, e.g. `/uploads` (defaults to `/uploads` if blank) |
+
+Saving creates or updates the WebDAV connection on the backend and activates it as the active NAS connection.
+
 Auto-refresh interval is set in **Profile → auto-refresh** and persists across restarts:
 | Option | Interval |
 |---|---|
@@ -94,9 +112,9 @@ Auto-refresh interval is set in **Profile → auto-refresh** and persists across
 app/
 ├── data/
 │   ├── database/       Room — upload queue persistence
-│   ├── network/        Retrofit + OkHttp, JWT interceptor, DTOs
+│   ├── network/        Retrofit + OkHttp, JWT interceptor, DTOs (File, NasConnection, Auth…)
 │   ├── preferences/    EncryptedSharedPreferences wrapper
-│   └── repository/     AuthRepository, FileRepository, NetworkSwitcher
+│   └── repository/     AuthRepository, FileRepository, NasRepository, NetworkSwitcher
 ├── ui/screens/         Jetpack Compose screens (Login, FileList, FileDetail, Profile, UploadQueue)
 ├── viewmodel/          AndroidViewModel + StateFlow/SharedFlow
 ├── worker/             UploadWorker, DownloadWorker, PhotoBackupWorker, SyncWorker (WorkManager CoroutineWorker)

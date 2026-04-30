@@ -18,6 +18,8 @@ class EncryptedPrefs(context: Context) {
         private const val KEY_AUTO_REFRESH = "auto_refresh_interval_ms"
         private const val KEY_AUTO_PHOTO_BACKUP = "auto_photo_backup"
         private const val KEY_LAST_PHOTO_BACKUP_TS = "last_photo_backup_ts"
+        private const val KEY_CONNECTION_MODE = "connection_mode"
+        private const val KEY_USER_ROLE = "user_role"
     }
 
     private val masterKey = MasterKey.Builder(context)
@@ -59,6 +61,12 @@ class EncryptedPrefs(context: Context) {
 
     fun saveLastPhotoBackupTs(ts: Long) { prefs.edit().putLong(KEY_LAST_PHOTO_BACKUP_TS, ts).apply() }
     fun getLastPhotoBackupTs(): Long = prefs.getLong(KEY_LAST_PHOTO_BACKUP_TS, 0L)
+
+    fun saveConnectionMode(mode: String) { prefs.edit().putString(KEY_CONNECTION_MODE, mode).apply() }
+    fun getConnectionMode(): String = prefs.getString(KEY_CONNECTION_MODE, "NAS") ?: "NAS"
+
+    fun saveUserRole(role: String) { prefs.edit().putString(KEY_USER_ROLE, role).apply() }
+    fun getUserRole(): String = prefs.getString(KEY_USER_ROLE, "") ?: ""
 
     fun clear() { prefs.edit().clear().apply() }
 }

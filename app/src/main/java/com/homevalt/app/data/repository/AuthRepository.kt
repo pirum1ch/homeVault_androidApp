@@ -25,6 +25,7 @@ class AuthRepository(
             if (response.isSuccessful && body != null) {
                 encryptedPrefs.saveToken(body.token)
                 encryptedPrefs.saveUsername(username)
+                encryptedPrefs.saveUserRole(body.role)
                 SyncWorker.enqueuePeriodicSync(context)
                 Result.success(Unit)
             } else {
@@ -40,12 +41,15 @@ class AuthRepository(
         encryptedPrefs.saveUsername("")
         encryptedPrefs.saveBiometricEnabled(false)
         encryptedPrefs.saveBiometricAsked(false)
+        encryptedPrefs.saveUserRole("")
+        encryptedPrefs.saveConnectionMode("NAS")
         database.uploadRequestDao().deleteAll()
         WorkManager.getInstance(context).cancelAllWork()
     }
 
     fun isLoggedIn(): Boolean = encryptedPrefs.getToken() != null
     fun getUsername(): String? = encryptedPrefs.getUsername()
+    fun getUserRole(): String = encryptedPrefs.getUserRole()
     fun isBiometricEnabled(): Boolean = encryptedPrefs.isBiometricEnabled()
     fun setBiometricEnabled(enabled: Boolean) = encryptedPrefs.saveBiometricEnabled(enabled)
     fun isBiometricAsked(): Boolean = encryptedPrefs.isBiometricAsked()
